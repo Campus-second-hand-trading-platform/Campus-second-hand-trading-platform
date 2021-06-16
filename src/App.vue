@@ -1,32 +1,46 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+    <router-view></router-view>
+    <div class="aside-bar">
+      <div class="bar-item" @click="toPage('/userinfo')"><i class="fa fa-user-o" aria-hidden="true"></i></div>
+      <div class="bar-item" @click="toPage('/chattingList')"><i class="fa fa-envelope-o" aria-hidden="true"></i></div>
     </div>
-    <router-view/>
   </div>
 </template>
 
+<script>
+
+export default {
+  name: 'app',
+  methods: {
+    toPage (page) {
+      console.log(sessionStorage.getItem('isLogin'))
+      if (sessionStorage.getItem('isLogin') === 'true') { this.$router.push(page) } else { this.$message.info('请先登录') }
+    }
+  }
+}
+</script>
+
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
+  .aside-bar {
+    position: fixed;
+    font-size: 30px;
+    bottom: 40%;
+    right: 30px;
+    z-index: 99;
+    border: none;
+    outline: none;
+    background-color: #9F9F9F;
+    color: white;
+    cursor: pointer;
+    padding: 0 5px;
+    border-radius: 2px;
+  }
+  .bar-item {
+    border-bottom: 1px solid #ffffff;
+    padding: 5px 0;
+  }
+  .bar-item:last-of-type {
+    border-bottom: 0px solid #ffffff;
+  }
 </style>

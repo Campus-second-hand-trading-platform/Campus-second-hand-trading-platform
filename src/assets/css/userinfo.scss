@@ -1,0 +1,54 @@
+@charset "utf-8";
+
+/*内容*/
+#contentCon{
+	width:1200px;
+	margin:auto;
+	margin-top:20px;
+	overflow:hidden;}
+#contentCon>.left{
+	float:left;
+	width:264px;
+	height:664px;
+	border:1px solid #dcdcdc;
+	text-align:center;}
+#contentCon>.left>div{
+	width:134px;
+	height:134px;
+	border-radius:67px;
+	background:url(../images/order_03.jpg) center no-repeat;
+	margin-top:40px;
+	margin-left:66px;}
+#contentCon>.left>p{
+	font-size:18px;
+	color:#4c4c4c;
+	margin-top:30px;}
+#contentCon>.left>a{
+	display:block;
+	width:103px;
+	height:34px;
+	border:1px solid #d2d2d2;
+	background:#eee;
+	text-align:center;
+	line-height:34px;
+	color:#4c4c4c;
+	margin-top:20px;
+	margin-left:80px;}
+#contentCon>.left>span{
+	display:block;
+	width:224px;
+	height:1px;
+	background:#eee;
+	margin-left:22px;
+	margin-top:22px;}
+#contentCon>.left>ul>li>a{
+	font-size:14px;
+	display:block;
+	margin-top:20px;
+	color:#4c4c4c;}
+#contentCon>.left>ul>li>.my{
+	color:#fb0000;}
+#contentCon>.right{
+	float:left;
+	width:876px;
+	margin-left:50px;}

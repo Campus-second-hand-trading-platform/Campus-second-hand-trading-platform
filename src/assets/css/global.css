@@ -1,0 +1,40 @@
+html,body,#app {
+  height: 100%;
+}
+/* 把我们所有标签的内外边距清零 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/*清除浮动*/
+.clearfix:before,.clearfix:after {
+  content: "";
+  display: table;
+}
+
+.clearfix:after{
+  clear:both;
+}
+
+.clearfix{
+  *zoom:1;
+}
+/*a样式*/
+a {
+  color: rgb(66, 181, 255);
+  text-decoration: none
+}
+
+a:hover {
+  /* color: #c81623 */
+  color: rgb(89, 152, 214);
+}
+
+li {
+  list-style: none;
+}
+
+/*.my-container {*/
+/*  width: ;*/
+/*}*/
