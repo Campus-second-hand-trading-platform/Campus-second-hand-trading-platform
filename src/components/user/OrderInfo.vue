@@ -15,8 +15,14 @@
         <el-form-item label="买家">
           <el-input v-model="form.buyerName" disabled></el-input>
         </el-form-item>
+        <el-form-item label="买家id">
+          <el-input v-model="form.buyerid" disabled></el-input>
+        </el-form-item>
         <el-form-item label="卖家">
           <el-input v-model="form.sellerName" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="买家id">
+          <el-input v-model="form.sellerid" disabled></el-input>
         </el-form-item>
         <el-form-item label="创建时间" disabled>
           <el-input v-model="form.order_time" disabled></el-input>

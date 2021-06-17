@@ -3,10 +3,19 @@
     <ul>
       <li>{{goods.gname}}</li>
       <li class="right">
-        <a href="#" @click="open"><i style="margin-right: 10px" class="fa fa-flag-o" aria-hidden="true"></i>举报</a>
-<!--        <a href="#">图集</a>-->
-<!--        <a href="#">参数</a>-->
-<!--        <a href="#" class="pingjia">评价</a>-->
+        <a href="#" @click="dialogFormVisible = true"><i style="margin-right: 10px" class="fa fa-flag-o" aria-hidden="true"></i>举报</a>
+
+        <el-dialog title="举报内容" :visible.sync="dialogFormVisible">
+          <el-form :model="report">
+            <el-form-item label="举报理由" label-width="120px">
+              <el-input v-model="report.reason" autocomplete="off"></el-input>
+            </el-form-item>
+          </el-form>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogFormVisible = false">取 消</el-button>
+            <el-button type="primary" @click="reportSubmit">确 定</el-button>
+          </div>
+        </el-dialog>
       </li>
     </ul>
     <div id="show">
@@ -118,6 +127,7 @@ export default {
           require('@/assets/images/use/手机3.jpg')
         ]
       },
+      dialogFormVisible: false,
       report: {
         userId: '180',
         reason: ''
@@ -135,10 +145,17 @@ export default {
         inputErrorMessage: '内容不能为空'
       }).then(({ value }) => {
         this.report.reason = value
-        this.$message({
-          type: 'success',
-          message: '举报成功: '
-        })
+        if (this.reportSubmit()) {
+          this.$message({
+            type: 'success',
+            message: '举报成功: '
+          })
+        } else {
+          this.$message({
+            type: 'error',
+            message: '举报失败: '
+          })
+        }
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -189,6 +206,28 @@ export default {
       //     userId: this.goods.sellerid
       //   }
       // })
+    },
+    reportSubmit () {
+      if (this.report.reason === '') {
+        this.$message.error('不能为空')
+        return
+      }
+      this.$http.post('/report', {
+        goodsid: this.goods.gid,
+        userId: sessionStorage.getItem('userId'),
+        reason: this.report.reason
+      }).then(res => {
+        console.log(res)
+        if (res.data.stateCode === 200) {
+          this.$message.success('举报成功')
+        } else {
+          this.$message.error('举报失败')
+        }
+        this.dialogFormVisible = false
+      }).catch(err => {
+        console.log(err)
+        this.$message.error('举报失败')
+      })
     }
   },
   created () {

@@ -135,16 +135,20 @@ export default {
       console.log(data)
       this.diagForm = data
       this.successDialogVisible = true
+    },
+    getReportData () {
+      this.$http.get('reports')
+        .then(res => {
+          console.log(res)
+          if (res.data.stateCode === 200) {
+            this.tableData = res.data.data
+          }
+        }, error => console.log(error))
     }
   },
+
   created () {
-    this.$http.get('reports')
-      .then(res => {
-        console.log(res)
-        if (res.data.stateCode === 200) {
-          this.tableData = res.data.data
-        }
-      }, error => console.log(error))
+    this.getReportData()
   }
 }
 </script>

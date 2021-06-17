@@ -38,9 +38,9 @@
             <span>x1</span>
           </el-col>
           <el-col :md="6">
-            <a v-show="order.issent===0" @click="confirm(order.orderid)" href="javascript:void(0)">确认收货</a>
+            <a v-show="order.issent===0 && order.confirm === 0" @click="confirm(order.orderid)" href="javascript:void(0)">确认收货</a>
             <a @click="detail(order.orderid)" href="javascript:void(0)">订单详情</a>
-            <a @click="drawback(order.orderid)" href="javascript:void(0)" class="text02">退款</a>
+            <a v-show="order.ostate !=2 " @click="drawback(order.orderid)" href="javascript:void(0)" class="text02">退款</a>
           </el-col>
         </el-row>
       </div>
@@ -102,7 +102,7 @@ export default {
     },
     async confirm (id) {
       const result = await this.$http.put('/order/deliveryConfirmation', {
-        userId: '18301082',
+        userId: sessionStorage.getItem('userId'),
         orderId: id
       })
       // console.log(result)

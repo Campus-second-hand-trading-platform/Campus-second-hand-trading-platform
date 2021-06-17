@@ -82,7 +82,7 @@ const routes = [
     ]
   },
   {
-    path: '/base3',
+    path: '/manager',
     component: base3,
     children: [
       {
