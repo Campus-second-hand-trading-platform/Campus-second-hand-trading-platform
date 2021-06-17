@@ -68,7 +68,7 @@ def PostReport():
 
 
 
-    create1 = "INSERT INTO report (reportid,uid,gid,rtime,rreason,rstate) values ("+ str(reportid) + "," + str(uid) + "," + str(gid) + ",'" + timenowstr + "','" + rreason + "','" + "0" + "');"
+    create1 = "INSERT INTO report (reportid,uid,gid,rtime,rreason,rstate) values ("+ str(reportid) + ",'" + str(uid) + "'," + str(gid) + ",'" + timenowstr + "','" + rreason + "','" + "0" + "');"
     print(create1)
     cursor.execute(create1)
     db.commit()

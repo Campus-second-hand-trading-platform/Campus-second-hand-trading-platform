@@ -96,7 +96,18 @@ def getOrder(orderid):
             'price':float(i[12])
 
         }
-
+    search = "select uname from users where uid='{}'".format(tmp['buyerid'])
+    cursor.execute(search)
+    buyerName=cursor.fetchone()[0]
+    search = "select u.uname,u.uid from users u,goods g where gid='{}' and g.sellerid=u.uid".format(tmp['gid'])
+    cursor.execute(search)
+    data=cursor.fetchone()
+    print(data)
+    sellerName = data[0]
+    sellerid =data[1]
+    tmp['buyerName']=buyerName
+    tmp['sellerName']=sellerName
+    tmp['sellerid'] = sellerid
     msg = {
        'data': tmp,
         'message': "成功",
@@ -204,10 +215,15 @@ def DeliveryConfirm():
     data = request.get_json(silent=True)
     buyerid = data['userId']
     orderid = data['orderId']
-    update = "update orders t set t.confirm = '1' where t.orderid = " + str(orderid) + " and t.buyerid = " + str(
-        buyerid) + ";"
+    update = "update orders t set t.confirm = 1 where t.orderid = '" + str(orderid) + "' and t.buyerid = '" + str(
+        buyerid) + "';"
+    print(update)
     cursor.execute(update)
+    currentTime = datetime.datetime.now()
+    update2 = "update orders t set t.confirm_time = '{}' where t.orderid='{}'".format(currentTime,orderid)
+    cursor.execute(update2)
     db.commit()
+
 
     msg = {
         'message': "成功",
@@ -305,11 +321,12 @@ def drawback():
     oid = request.args.get("orderId")
     cancel_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     # 判断商品是否已经确认发货了
-    sql = "select goods.gid,issent from goods,orders where goods.gid=orders.gid and orderid=%s"
+    sql = "select goods.gid,issent,confirm from goods,orders where goods.gid=orders.gid and orderid=%s"
     cursor.execute(sql, [oid])
     data = cursor.fetchall()
     gid = data[0][0]
-    issent = data[0][1]
+    issent = data[0][1]  # 1未发货,0已发货
+    confirm = data[0][2]  # 0未确认收货，1已确认
     if issent == 1:  # 未发货
         sql1 = "update orders set ostate=%s,cancel_time=%s where orderid=%s"  # 0支付失败,1支付成功,2支付成功后退款,退款后记录退款时间
         cursor.execute(sql1, [2, cancel_time, oid])
@@ -322,14 +339,74 @@ def drawback():
             "data": "退款成功"
         }
     else:  # 已经发货了
-        res = {
-            "stateCode": 202,
-            "message": "失败",
-            "data": "卖家已经发货，不能退款"
-        }
+        if confirm == 0:
+            res = {
+                "stateCode": 202,
+                "message": "失败",
+                "data": "交易未完成，不能退款"
+            }
+        else:
+            sql3 = "select confirm_time from orders where orderid=%s"
+            cursor.execute(sql3, [oid])
+            timedata = cursor.fetchall()
+            confirm_time = timedata[0][0]
+            currentTime = datetime.datetime.now()
+            timeLong = (currentTime - confirm_time).days  # 确认收货日期到今天一共差了几天
+            # print(type(confirm_time))
+            # print(type(currentTime))
+            # print((currentTime - confirm_time).days)
+            # print(type((currentTime-confirm_time).days))
+            if timeLong > 7:
+                res = {
+                    "stateCode": 202,
+                    "message": "失败",
+                    "data": "收货超过七天，不能退款"
+                }
+            else:
+                sql1 = "update orders set ostate=%s,cancel_time=%s where orderid=%s"  # 0支付失败,1支付成功,2支付成功后退款,退款后记录退款时间
+                cursor.execute(sql1, [2, cancel_time, oid])
+                sql2 = "update goods set gstate=%s where gid=%s"
+                cursor.execute(sql2, [1, gid])
+                db.commit()
+                res = {
+                    "stateCode": 200,
+                    "message": "成功",
+                    "data": "退款成功"
+                }
     db.close()
     cursor.close()
     return res
+# def drawback():
+#     db = conn_db()  # 连接数据库
+#     cursor = db.cursor()  # 使用 cursor() 方法创建一个游标对象 cursor
+#     oid = request.args.get("orderId")
+#     cancel_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+#     # 判断商品是否已经确认发货了
+#     sql = "select goods.gid,issent from goods,orders where goods.gid=orders.gid and orderid=%s"
+#     cursor.execute(sql, [oid])
+#     data = cursor.fetchall()
+#     gid = data[0][0]
+#     issent = data[0][1]
+#     if issent == 1:  # 未发货
+#         sql1 = "update orders set ostate=%s,cancel_time=%s where orderid=%s"  # 0支付失败,1支付成功,2支付成功后退款,退款后记录退款时间
+#         cursor.execute(sql1, [2, cancel_time, oid])
+#         sql2 = "update goods set gstate=%s where gid=%s"
+#         cursor.execute(sql2, [1, gid])
+#         db.commit()
+#         res = {
+#             "stateCode": 200,
+#             "message": "成功",
+#             "data": "退款成功"
+#         }
+#     else:  # 已经发货了
+#         res = {
+#             "stateCode": 202,
+#             "message": "失败",
+#             "data": "卖家已经发货，不能退款"
+#         }
+#     db.close()
+#     cursor.close()
+#     return res
 
 # 卖家确认订单发货接口
 @orders.route("/order/beginDelivery", methods=['PUT'])
